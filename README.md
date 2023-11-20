@@ -21,7 +21,7 @@ PRINT = "Println", "(", BOOLEAN EXPRESSION, ")" ;
 
 IF = "if", BOOLEAN EXPRESSION, BLOCK, { "else", BLOCK } ;
 FOR = "for", ASSIGN, ";", BOOLEAN EXPRESSION, ";", ASSIGN, BLOCK ;
-VAR = "note", MUSICAL_IDENTIFIER, ( "int" | "string" ), ( λ | "=", BOOLEAN EXPRESSION ) ;
+VAR = "note", MUSICAL_IDENTIFIER, ( "int" | "string" | "bol" | "float"), ( λ | "=", BOOLEAN EXPRESSION ) ;
 
 BOOLEAN EXPRESSION = BOOLEAN TERM, { "||" BOOLEAN TERM } ;
 BOOLEAN TERM = RELATIONAL EXPRESSION, { "&&", RELATIONAL EXPRESSION } ;
