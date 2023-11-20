@@ -1,7 +1,10 @@
 %{
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    void yyerror(const char *s);
+    extern int yylex(void);
+    extern char *yytext; 
 
 /* Define token types */
 enum {
@@ -35,16 +38,14 @@ enum {
     LESSEQUAL,
     GREATER,
     LESS,
+    Clef,
+    NEWLINE,
+    SEMICOLON,
+    INT,
+    STRING,
+    BOOL,
+    FLOAT,
 };
-
-// TODO -> alterar para o correto
-/* Declare variables */
-char *musical_identifier; // TODO -> alterar para o correto
-int  *number; // TODO -> alterar para o correto
-char *variable_name;
-char *variable_type;
-char *expression_string;
-char *statement_string;
 
 /* Function prototypes */
 void parse_statement(void);
@@ -58,23 +59,27 @@ int parse_factor(void);
 
 /* Grammar rules */
 
-program: MUSICAL_IDENTIFIER COMMA Clef LCLY { STATEMENT RCLY } ;
+program: musical_identifier COMMA Clef NEWLINE block ;
 
 musical_identifier: NOTES NOTE_MODIFIERS* NUMBER* ;
 
-block: LCLY NEWLINE STATEMENT* RCLY ;
+block: LCURLY NEWLINE statement* RCURLY ;
 
-statement: ASSIGN | PRINT | IF | FOR | VAR NEWLINE ;
+statement: assignment | print | if | for | var NEWLINE ;
 
-assign: MUSICAL_IDENTIFIER EQUAL expression ;
+assignment: musical_identifier EQUAL expression ;
 
 print: PRINT LPAREN expression RPAREN ;
 
-if: IF expression block ELSE block* ;
+if: IF expression block else_block* ;
 
-for: FOR assign SEMICOLON expression SEMICOLON assign block ;
+else_block: ELSE block ;
 
-var: VAR musical_identifier type_specifier assign* ;
+for: for_assign SEMICOLON expression SEMICOLON for_assign block ;
+
+for_assign: assignment ;
+
+var: VAR musical_identifier type_specifier assignment* ;
 
 type_specifier: INT | STRING | BOOL | FLOAT ;
 
@@ -91,3 +96,18 @@ term_list: TIMES factor term_list | DIVIDE factor term_list | empty ;
 factor: NUMBER | STRING | musical_identifier | NOT factor | LPAREN expression RPAREN | SCAN ;
 
 %%
+
+void yyerror(const char *s) {
+    extern int yylval;   // Token value
+    fprintf(stderr, "Error near token '%s': %s\n", yytext, s);
+}
+
+int main(void) {
+    extern int yy_flex_debug;
+    yy_flex_debug = 1;
+    if (yyparse()) {
+        printf("Error in parsing!\n");
+        return 1;
+    }
+    return 0;
+}
