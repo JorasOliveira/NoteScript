@@ -5,8 +5,8 @@ A programming language that you (hopefully) can play with your favorite instrume
 # EBNF (Extended Backus-Naur Form)
 
 ### Grammar Definitions
-
-PROGRAM = MUSICAL_IDENTIFIER, ", ", Clef, { STATEMENT } ;
+PROGRAM = { DECLARATION } ;
+DECLARATION = MUSICAL_IDENTIFIER, "Clef", "(" { IDENTIFIER, ( "int" | "string" ), [ "," ] }, ")", ( "int" | "string" ), BLOCK, "\n" ;
 
 MUSICAL_IDENTIFIER = NOTES, {λ | NOTES | NOTE_MODIFIERS | NUMBER };
 NOTES = (a | b | c | d | e | f | g | A | B | C | D | E | F | G )  ;
@@ -40,5 +40,6 @@ NUMBER = DIGIT, { DIGIT } ;
 STRING = ( `"` | `'` ), { λ | LETTER | DIGIT }, ( `"` | `'` ) ;
 LETTER = ( a | ... | z | A | ... | Z ) ;
 DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
+
 
 ![alt text](diagrama.png)

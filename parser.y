@@ -1,113 +1,74 @@
 %{
-    #include <stdio.h>
-    #include <stdlib.h>
+#include <stdio.h>
+#include "Token.h"
 
-    void yyerror(const char *s);
-    extern int yylex(void);
-    extern char *yytext; 
+int yylex();
 
-/* Define token types */
-enum {
-    IDENTIFIER,
-    NUMBER,
-    STRING,
-    NOTES,
-    NOTE_MODIFIERS,
-    ASSIGN,
-    IF,
-    ELSE,
-    FOR,
-    VAR,
-    PRINT,
-    SCAN,
-    LPAREN,
-    RPAREN,
-    LCURLY,
-    RCURLY,
-    COMMA,
-    PLUS,
-    MINUS,
-    TIMES,
-    DIVIDE,
-    DOT,
-    EQUAL,
-    NOT,
-    AND,
-    OR,
-    GREATEREQUAL,
-    LESSEQUAL,
-    GREATER,
-    LESS,
-    Clef,
-    NEWLINE,
-    SEMICOLON,
-    INT,
-    STRING,
-    BOOL,
-    FLOAT,
-};
-
-/* Function prototypes */
-void parse_statement(void);
-int parse_expression(void);
-int parse_term(void);
-int parse_factor(void);
-
+void yyerror(char *s) {
+    printf("Error: %s\n", s);
+}
 %}
 
-%%
+%token IDENTIFIER
+%token OPERATOR
+%token NOTE_MODIFIER
+%token NOTE
+%token NUMBER
+%token STRING
 
-/* Grammar rules */
-
-program: musical_identifier COMMA Clef NEWLINE block ;
-
-musical_identifier: NOTES NOTE_MODIFIERS* NUMBER* ;
-
-block: LCURLY NEWLINE statement* RCURLY ;
-
-statement: assignment | print | if | for | var NEWLINE ;
-
-assignment: musical_identifier EQUAL expression ;
-
-print: PRINT LPAREN expression RPAREN ;
-
-if: IF expression block else_block* ;
-
-else_block: ELSE block ;
-
-for: for_assign SEMICOLON expression SEMICOLON for_assign block ;
-
-for_assign: assignment ;
-
-var: VAR musical_identifier type_specifier assignment* ;
-
-type_specifier: INT | STRING | BOOL | FLOAT ;
-
-expression: term expression_list ;
-
-expression_list: PLUS term expression_list | MINUS term expression_list | empty ;
-
-empty: ;
-
-term: factor term_list ;
-
-term_list: TIMES factor term_list | DIVIDE factor term_list | empty ;
-
-factor: NUMBER | STRING | musical_identifier | NOT factor | LPAREN expression RPAREN | SCAN ;
+%type <IDENTIFIER> musical_identifier
+%type <IDENTIFIER> identifier
 
 %%
 
-void yyerror(const char *s) {
-    extern int yylval;   // Token value
-    fprintf(stderr, "Error near token '%s': %s\n", yytext, s);
-}
+program : declaration;
 
-int main(void) {
-    extern int yy_flex_debug;
-    yy_flex_debug = 1;
-    if (yyparse()) {
-        printf("Error in parsing!\n");
-        return 1;
-    }
-    return 0;
-}
+declaration : musical_identifier, "Clef:", "(", { identifier, type, "," }, ")", type, block, "\n";
+
+musical_identifier : notes, { | notes | note_modifiers | number };
+
+notes : NOTE, { NOTE };
+
+note_modifiers : NOTE_MODIFIER, { NOTE_MODIFIER };
+
+block : "{" newline { statement } "}";
+
+statement : assign | print | if_statement | for_statement | var_declaration;
+
+assign : musical_identifier, "=", boolean_expression;
+
+print : "Println", "(", boolean_expression, ")";
+
+if_statement : "if", boolean_expression, block, { "else", block };
+
+for_statement : "for", assign, ";", boolean_expression, ";", assign, block;
+
+var_declaration : "note", musical_identifier, type, { "=", boolean_expression };
+
+boolean_expression : boolean_term, { "||" boolean_term };
+
+boolean_term : relational_expression, { "&&" relational_expression };
+
+relational_expression : expression, { relational_operator expression };
+
+expression : term, { additive_operator term };
+
+term : factor, { multiplicative_operator factor };
+
+factor : NUMBER | STRING | musical_identifier | unary_operator factor | "(" boolean_expression ")" | scan;
+
+scan : "Scanln", "(", ")";
+
+relational_operator : "==" | ">" | "<";
+
+additive_operator : "+" | "-";
+
+multiplicative_operator : "*" | "/";
+
+unary_operator : "+" | "-" | "!";
+
+type : "int" | "string" | "bool" | "float";
+
+newline : "\n";
+
+%%

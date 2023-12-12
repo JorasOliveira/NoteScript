@@ -16,9 +16,9 @@ NOTES: [a-gA-G];
 
 NOTE_MODIFIERS: [#, b_, maj, m, dim, aug];
 
-NUMBER: [0-9]+;
+NUMBER: [0-9]+
 
-STRING: "([^"]*)" | '([^'])';
+STRING: "([^"]*)" | '([^'])'
 
 LETTER: [a-zA-Z];
 
