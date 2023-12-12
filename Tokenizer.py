@@ -33,10 +33,10 @@ class Tokenizer:
                 number_str = self.source[self.position : end_index]
                 self.next = Token.Token("number", int(number_str))
                 self.position = end_index
-                    
+                    # | _ | M | m
             elif self.source[self.position].isalpha(): #tokenizes variable names
                 end_index = self.position
-                while (self.source[end_index] not in ["+", "-", "*", "/", "\n", "(", ")", "=", " ", ".", ",", ";", "{", "}", "<", ">", "!", "|", "&", '"', "\t"]):
+                while (self.source[end_index] not in ["+", "-", "*", "/", "\n", "(", ")", "=", " ", ".", ",", ";", "{", "}", "<", ">", "!", "|", "&", '"', "\t"]) or (self.source[end_index] in ["a", "b", "c", "d", "e", "f", "g", "A", "B", "C", "D", "E", "F", "G", "#", "_", "M", "m"]):
                     end_index += 1
 
                 identifier_str = self.source[self.position : end_index]

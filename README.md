@@ -10,7 +10,7 @@ DECLARATION = MUSICAL_IDENTIFIER, "Clef", "(" { IDENTIFIER, ( "int" | "string" )
 
 MUSICAL_IDENTIFIER = NOTES, {λ | NOTES | NOTE_MODIFIERS | NUMBER };
 NOTES = (a | b | c | d | e | f | g | A | B | C | D | E | F | G )  ;
-NOTE_MODIFIERS = (# | b_ | maj | m | dim | aug ) ;
+NOTE_MODIFIERS = (# | _ | M | m) ;
 
 BLOCK = "{", "\n", { STATEMENT }, "}" ;
 STATEMENT = ( λ | ASSIGN | PRINT | IF | FOR | VAR), "\n" ;

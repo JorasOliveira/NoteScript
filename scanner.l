@@ -14,7 +14,7 @@ MUSICAL_IDENTIFIER: [a-zA-Z]+;
 
 NOTES: [a-gA-G];
 
-NOTE_MODIFIERS: [#, b_, maj, m, dim, aug];
+NOTE_MODIFIERS: [#, _, M, m];
 
 NUMBER: [0-9]+
 
